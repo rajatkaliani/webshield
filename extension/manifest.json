@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "WebShield - Rule-based UI security analyzer",
+  "version": "0.1.0",
+  "description": "Detects deceptive or suspicious UI elements (overlays, invisible clickables, mismatched links) on pages.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
