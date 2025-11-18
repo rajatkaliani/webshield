@@ -7,7 +7,7 @@ from parser_utils import (
     extract_dom_elements,
     parse_external_resources
 )
-from core.dynamic_renderer import render_dynamic_dom
+from dynamic_renderer import render_dynamic_dom
 
 def parse_url(url: str) -> dict:
     """Full Phase 1 + Phase 2 parsing."""
