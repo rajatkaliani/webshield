@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "WebShield Scanner",
+  "version": "1.0",
+  "description": "Scan websites for security vulnerabilities using the WebShield backend.",
+  "permissions": ["activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  }
+}
