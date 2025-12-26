@@ -1,70 +1,53 @@
-# scanners/js_scanner.py
-
+"""
+JavaScript Scanner: Parse JS code, analyze each pattern, store issues based on rules.
+"""
 import re
 
 
-def scan_js(js_code: str) -> list[dict]:
+def scan_js(js_code):
     """
-    Main JS scanner entry point.
+    Parse JavaScript code and analyze against security rules.
+    
+    Returns list of issues found.
     """
-    issues: list[dict] = []
-
-    detect_eval_and_function(js_code, issues)
-    detect_document_write(js_code, issues)
-    detect_dom_injection_patterns(js_code, issues)
-    detect_redirect_handlers(js_code, issues)
-    detect_popup_spam(js_code, issues)
-    detect_crypto_mining(js_code, issues)
-    detect_obfuscation(js_code, issues)
-    detect_autoplay_injection(js_code, issues)
-    detect_cookie_manipulation(js_code, issues)
-
+    issues = []
+    
+    # Analyze different patterns
+    analyze_dangerous_functions(js_code, issues)
+    analyze_dom_injection(js_code, issues)
+    analyze_redirects(js_code, issues)
+    analyze_popups(js_code, issues)
+    analyze_crypto_mining(js_code, issues)
+    analyze_obfuscation(js_code, issues)
+    analyze_autoplay(js_code, issues)
+    analyze_cookies(js_code, issues)
+    
     return issues
 
 
-# ------------- Classic dangerous functions -------------
+# ==================== Analysis Functions ====================
+
+def analyze_dangerous_functions(js_code, issues):
+    """Analyze for eval() and Function() constructor."""
+    if "eval(" in js_code:
+        store_issue(issues, "Use of eval() in JavaScript", "high", "malicious_js")
+    
+    if "Function(" in js_code or "new Function(" in js_code:
+        store_issue(issues, "Use of Function constructor in JavaScript", "high", "malicious_js")
+    
+    if "document.write" in js_code:
+        store_issue(issues, "Use of document.write() can lead to injection", "low", "malicious_js")
 
 
-def detect_eval_and_function(js: str, issues: list[dict]) -> None:
-    if "eval(" in js:
-        issues.append({
-            "issue": "Use of eval() in JavaScript",
-            "severity": "high",
-            "category": "malicious_js",
-        })
-
-    # Dynamic Function constructor
-    if "Function(" in js or "new Function(" in js:
-        issues.append({
-            "issue": "Use of Function constructor in JavaScript",
-            "severity": "high",
-            "category": "malicious_js",
-        })
-
-
-def detect_document_write(js: str, issues: list[dict]) -> None:
-    if "document.write" in js:
-        issues.append({
-            "issue": "Use of document.write() can lead to injection",
-            "severity": "low",
-            "category": "malicious_js",
-        })
-
-
-def detect_dom_injection_patterns(js: str, issues: list[dict]) -> None:
+def analyze_dom_injection(js_code, issues):
+    """Analyze for DOM HTML injection patterns."""
     patterns = ["innerHTML", "outerHTML", "insertAdjacentHTML"]
-    if any(p in js for p in patterns):
-        issues.append({
-            "issue": "Direct DOM HTML injection patterns detected",
-            "severity": "medium",
-            "category": "malicious_js",
-        })
+    if any(pattern in js_code for pattern in patterns):
+        store_issue(issues, "Direct DOM HTML injection patterns detected", "medium", "malicious_js")
 
 
-# ------------- Redirects, popups, click hijacking -------------
-
-
-def detect_redirect_handlers(js: str, issues: list[dict]) -> None:
+def analyze_redirects(js_code, issues):
+    """Analyze for redirect handlers combined with click events."""
     redirect_keywords = [
         "window.location",
         "location.href",
@@ -72,108 +55,80 @@ def detect_redirect_handlers(js: str, issues: list[dict]) -> None:
         "location.replace",
         "window.open(",
     ]
-
+    
     click_bindings = [
         "document.onclick",
         "document.onmousedown",
         "document.addEventListener('click'",
         'document.addEventListener("click"',
     ]
+    
+    has_click = any(cb in js_code for cb in click_bindings)
+    has_redirect = any(rk in js_code for rk in redirect_keywords)
+    
+    if has_click and has_redirect:
+        store_issue(issues, "Click handler that triggers redirect or new window", "high", "malicious_js")
 
-    if any(cb in js for cb in click_bindings) and any(rk in js for rk in redirect_keywords):
-        issues.append({
-            "issue": "Click handler that triggers redirect or new window",
-            "severity": "high",
-            "category": "malicious_js",
-        })
 
-
-def detect_popup_spam(js: str, issues: list[dict]) -> None:
+def analyze_popups(js_code, issues):
+    """Analyze for popup or new window behavior."""
     popup_patterns = [
         "window.open(",
         "openNewWindow(",
         "window.showModalDialog",
     ]
-
-    if any(p in js for p in popup_patterns):
-        issues.append({
-            "issue": "Popup or new window behavior detected",
-            "severity": "medium",
-            "category": "malicious_js",
-        })
+    
+    if any(pattern in js_code for pattern in popup_patterns):
+        store_issue(issues, "Popup or new window behavior detected", "medium", "malicious_js")
 
 
-# ------------- Crypto mining and obfuscation -------------
+def analyze_crypto_mining(js_code, issues):
+    """Analyze for crypto mining scripts."""
+    suspicious_terms = ["coinhive", "miner", "hashrate", "webmine"]
+    wasm_patterns = ["WebAssembly.instantiate", "WebAssembly.compile"]
+    
+    has_suspicious = any(term in js_code for term in suspicious_terms)
+    has_wasm = any(wp in js_code for wp in wasm_patterns)
+    
+    if has_suspicious or has_wasm:
+        store_issue(issues, "Possible crypto mining script detected", "high", "malicious_js")
 
 
-def detect_crypto_mining(js: str, issues: list[dict]) -> None:
-    suspicious_terms = [
-        "coinhive",
-        "miner",
-        "hashrate",
-        "webmine",
-    ]
-
-    wasm_patterns = [
-        "WebAssembly.instantiate",
-        "WebAssembly.compile",
-    ]
-
-    if any(term in js for term in suspicious_terms) or any(wp in js for wp in wasm_patterns):
-        issues.append({
-            "issue": "Possible crypto mining script detected",
-            "severity": "high",
-            "category": "malicious_js",
-        })
-
-
-def detect_obfuscation(js: str, issues: list[dict]) -> None:
-    # Heuristics for obfuscated payloads: long base64 or hex strings
-    long_hex = re.search(r"(?:\\x[0-9a-fA-F]{2}){8,}", js)
-    long_base64 = re.search(r"[A-Za-z0-9+/]{40,}={0,2}", js)
-
+def analyze_obfuscation(js_code, issues):
+    """Analyze for obfuscated or encoded JavaScript."""
+    # Long hex strings
+    long_hex = re.search(r"(?:\\x[0-9a-fA-F]{2}){8,}", js_code)
+    # Long base64 strings
+    long_base64 = re.search(r"[A-Za-z0-9+/]{40,}={0,2}", js_code)
+    
     if long_hex or long_base64:
-        issues.append({
-            "issue": "Obfuscated or encoded JavaScript detected",
-            "severity": "high",
-            "category": "malicious_js",
-        })
-
-    # Single-letter variable patterns repeated
-    if re.search(r"var\s+[a-zA-Z]\s*=", js) and js.count("var ") > 10:
-        issues.append({
-            "issue": "Heavily minified or obfuscated variable naming pattern",
-            "severity": "medium",
-            "category": "malicious_js",
-        })
+        store_issue(issues, "Obfuscated or encoded JavaScript detected", "high", "malicious_js")
+    
+    # Heavily minified pattern
+    if re.search(r"var\s+[a-zA-Z]\s*=", js_code) and js_code.count("var ") > 10:
+        store_issue(issues, "Heavily minified or obfuscated variable naming pattern", "medium", "malicious_js")
 
 
-# ------------- Autoplay and media injection -------------
+def analyze_autoplay(js_code, issues):
+    """Analyze for autoplay media injection."""
+    media_patterns = ["new Audio(", ".play()", "HTMLAudioElement", "HTMLVideoElement"]
+    
+    if "play()" in js_code and any(m in js_code for m in media_patterns):
+        store_issue(issues, "Possible auto play of media without user interaction", "medium", "malicious_js")
 
 
-def detect_autoplay_injection(js: str, issues: list[dict]) -> None:
-    media_patterns = [
-        "new Audio(",
-        ".play()",
-        "HTMLAudioElement",
-        "HTMLVideoElement",
-    ]
-
-    if "play()" in js and any(m in js for m in media_patterns):
-        issues.append({
-            "issue": "Possible auto play of media without user interaction",
-            "severity": "medium",
-            "category": "malicious_js",
-        })
+def analyze_cookies(js_code, issues):
+    """Analyze for cookie manipulation."""
+    if "document.cookie" in js_code:
+        store_issue(issues, "JavaScript manipulating document.cookie", "medium", "tracking")
 
 
-# ------------- Cookie and tracking manipulation -------------
+# ==================== Helper Functions ====================
 
-
-def detect_cookie_manipulation(js: str, issues: list[dict]) -> None:
-    if "document.cookie" in js:
-        issues.append({
-            "issue": "JavaScript manipulating document.cookie",
-            "severity": "medium",
-            "category": "tracking",
-        })
+def store_issue(issues, issue_text, severity, category):
+    """Store an issue in the issues list."""
+    issues.append({
+        "issue": issue_text,
+        "severity": severity,
+        "category": category,
+    })
