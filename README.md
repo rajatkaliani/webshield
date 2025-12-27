@@ -1,99 +1,54 @@
-# WebShield - Simple Web Security Scanner
+# WebShield (local developer setup)
 
-A simple, functional web security scanner that parses HTML/CSS/JS, analyzes each token against security rules, and stores issues.
+This repository contains a rule-based web UI security scanner and a small extension popup that posts a URL to a local scanning API.
 
-## How It Works
+Quick start (macOS / Linux)
 
-1. **Parse**: Extract HTML, CSS, and JavaScript from a webpage
-2. **Analyze**: Check each element/token against security rules
-3. **Store**: Collect issues and compute security score
+1. Create and activate a virtual environment (recommended):
 
-## Quick Start
-
-1. Create and activate virtual environment:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
 2. Install dependencies:
+
 ```bash
 pip install -r requirements.txt
+# Install Playwright browser binaries (required if renderer is used):
+python3 -m playwright install --with-deps
 ```
 
-3. Run the API server:
+3. Run the API server (development):
+
 ```bash
+# From the repo root
 uvicorn scan_api:app --reload --host 0.0.0.0 --port 8000
 ```
 
 4. Test the endpoint:
+
 ```bash
-curl -X POST http://localhost:8000/scan \
-  -H "Content-Type: application/json" \
-  -d '{"url":"https://example.com"}'
+curl -X POST http://localhost:8000/scan -H "Content-Type: application/json" -d '{"url":"https://news.ycombinator.com/"}'
 ```
 
-## Project Structure
+If `curl` fails with "Couldn't connect", it means the server process isn't running or is blocked by firewall — see troubleshooting below.
 
-```
-WebSecProject/
-├── backend/
-│   ├── html_scanner.py    # Parse HTML, analyze elements, store issues
-│   ├── js_scanner.py      # Parse JS, analyze patterns, store issues
-│   ├── css_scanner.py     # Parse CSS, analyze rules, store issues
-│   └── issue_dict.py      # Orchestrates scanning and scoring
-├── extension/             # Browser extension (Chrome/Edge)
-│   ├── popup.html
-│   ├── popup.js
-│   └── manifest.json
-├── scan_api.py           # FastAPI server (synchronous, no async)
-├── parser_utils.py        # Simple fetch and extract functions
-└── requirements.txt
+Troubleshooting
+
+- If you see import errors when starting the server, ensure you're running from the repository root so Python can find the `backend/` and project modules.
+- Check the server process and listening ports:
+
+```bash
+# macOS
+lsof -nP -iTCP:8000 -sTCP:LISTEN
+
+# or
+netstat -an | grep 8000
 ```
 
-## Usage
+- If the extension popup shows CORS errors when calling the API, ensure the server is running and returning appropriate CORS headers; `scan_api.py` enables permissive CORS for local development.
 
-### API Endpoint
+Next steps
 
-**POST /scan**
-
-Accepts:
-- `{"url": "https://example.com"}` - Fetches page and all external resources
-- `{"html": "...", "js": [...], "css": [...]}` - Direct content
-
-Returns:
-```json
-{
-  "score": 85,
-  "issues": [
-    {
-      "issue": "Inline JavaScript detected",
-      "severity": "medium",
-      "category": "malicious_js"
-    }
-  ],
-  "issue_count": 3
-}
-```
-
-### Browser Extension
-
-1. Load the extension from the `extension/` folder
-2. Navigate to any website
-3. Click the extension icon and press "Scan Site"
-4. View the security score
-
-## Security Rules
-
-The scanner checks for:
-- **HTML**: Inline JS, deprecated tags, hidden elements, clickjacking, fake links
-- **JavaScript**: eval(), obfuscation, crypto mining, redirects, DOM injection
-- **CSS**: Hidden elements, offscreen positioning, pointer-events tricks
-
-## Scoring
-
-- Starts at 100 points
-- Low severity: -2 points
-- Medium severity: -5 points  
-- High severity: -10 points
-- Minimum score: 0
+- If you want, I can add a small `run_server.sh` script, or convert `backend/` into a proper Python package to improve imports and linting.
