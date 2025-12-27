@@ -179,7 +179,7 @@ document.getElementById("scanBtn").addEventListener("click", async () => {
       });
     } else {
       summaryDiv.innerHTML = "";
-      issuesDiv.innerHTML = '<div class="no-issues">No security issues found!</div>';
+      issuesDiv.innerHTML = '<div class="no-issues"><span style="font-size: 50px; display: block; margin-bottom: 12px; color:  #10b981;">&#10003;</span>No security issues found!</div>';
     }
     
     // Highlight issues on the page

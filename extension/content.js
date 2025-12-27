@@ -2,7 +2,7 @@
 const SEVERITY_COLORS = {
   high: '#ef4444',    // Red
   medium: '#f59e0b',  // Orange
-  low: '#FFEEAC'      // yellow
+  low: '#FFEEAC'      // 
 };
 
 let highlightOverlays = [];
