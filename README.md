@@ -86,3 +86,7 @@ These patterns can mislead users and are often used in deceptive interfaces.
 ## Use Cases
 - UX deception detection
 - Security tooling research
+
+## Future implementation:
+- ML for anomoly detection
+- Gemini API for better explainability and user knowledge
