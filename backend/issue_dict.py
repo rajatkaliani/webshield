@@ -1,6 +1,13 @@
 """
 Main scanning orchestrator.
-Parses HTML/JS/CSS, analyzes each token, and stores issues based on ruleset.
+
+This module coordinates the security scanning process:
+1. Runs HTML, JavaScript, and CSS scanners
+2. Collects all security issues found
+3. Calculates a security score (starts at 100, deducts points per issue)
+4. Returns results with score, issues list, and issue count
+
+Scoring: Low = -2, Medium = -5, High = -10 points
 """
 from html_scanner import scan_html
 from js_scanner import scan_js
@@ -22,18 +29,18 @@ def run_scan(html, js_list, css_list, page_url=None):
     """
     issues = []
     
-    # Parse and analyze HTML
+    # Scan HTML
     issues.extend(scan_html(html, page_url=page_url))
     
-    # Parse and analyze each JavaScript file
+    # Scan each JavaScript file
     for js_code in js_list:
         issues.extend(scan_js(js_code))
     
-    # Parse and analyze each CSS file
+    # Scan each CSS file
     for css_code in css_list:
         issues.extend(scan_css(css_code))
     
-    # Compute security score
+    # Calculate security score
     score = compute_score(issues)
     
     return {
@@ -47,6 +54,7 @@ def compute_score(issues):
     """
     Calculate security score based on issue severities.
     Starts at 100, deducts points for each issue.
+    Minimum score is 0.
     """
     score = 100
     
