@@ -81,8 +81,8 @@ These patterns can mislead users and are often used in deceptive interfaces.
 - Iterates through issue_dict
 
 ## extension/popup.js
-- takes backend information and formats it into a readable and explainable scoring UI for user
-- 
+- takes backend information and formats it into a readable and explainable scoring UI for the user
+
 ## Use Cases
 - UX deception detection
 - Security tooling research
