@@ -1,13 +1,26 @@
 
-# NetShield 🛡️
-A real-time client-side web security analyzer that scans webpages for
-dark patterns and malicious components scoring security and highlighting malicious elements
+# WebShield 🛡️
+📌 WebShield
 
-WebShield is a Chrome extension that performs real-time security analysis
-on live pages. It scans HTML, JavaScript, and CSS metadata for common dark patterns,
-privacy, and UX-deception risks, then generates an explainable security score with highlighted malicious components. 
+WebShield is a Chrome browser extension + backend scanner that performs real-time security analysis of web pages. It inspects HTML, CSS, and JavaScript to detect dark patterns, deceptive UX, and malicious components, then generates a transparent security score along with categorized issue highlights.
 
-With a simple chrome extension, this is designed to help prevent malicious actors and cybersecurity risks worldwide.
+Why this matters
+Web threats aren’t only overt malware. Many harmful experiences hide in deceptive UI/UX or subtle script-based manipulations. WebShield helps users and developers understand and visualize these issues with an easy-to-interpret score and annotations.
+
+Key Features
+
+Real-time scanning of loaded web content
+
+Rule-based vulnerability detection
+
+Scoring based on severity (high/medium/low)
+
+Visual highlighting of suspicious elements
+
+Explainable feedback for users
+
+Built With
+Python · FastAPI · Chrome extension · JavaScript · HTML & CSS
 
 ## WATCH THIS ##
 
