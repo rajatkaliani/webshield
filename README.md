@@ -4,6 +4,11 @@ WebShield is a real-time web security analysis system built as a Chrome extensio
 
 Unlike traditional malware scanners, WebShield targets non-obvious, adversarial web threats that rely on UI manipulation and subtle script-based behaviors rather than explicit exploits. The system produces a deterministic, explainable security score with categorized findings and visual DOM annotations.
 
+🎥 Demo
+
+▶️ Watch the demo:
+https://youtu.be/4--ddW2lfLc
+
 🚨 Why WebShield?
 
 Modern web threats increasingly hide behind interface design, not malware.
@@ -126,10 +131,6 @@ Adaptive scoring based on behavioral context
 
 Expanded rule set for emerging deceptive design patterns
 
-🎥 Demo
-
-▶️ Watch the demo:
-https://youtu.be/4--ddW2lfLc
 
 If you want next steps, I can:
 
