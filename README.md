@@ -1,105 +1,144 @@
+🛡️ WebShield
 
-# WebShield 🛡️
-📌 WebShield
+WebShield is a real-time web security analysis system built as a Chrome extension + FastAPI backend. It performs static analysis on live web pages by inspecting raw HTML, CSS, JavaScript, and the rendered DOM to detect deceptive UX patterns, dark patterns, and malicious client-side behaviors.
 
-WebShield is a Chrome browser extension + backend scanner that performs real-time security analysis of web pages. It inspects HTML, CSS, and JavaScript to detect dark patterns, deceptive UX, and malicious components, then generates a transparent security score along with categorized issue highlights.
+Unlike traditional malware scanners, WebShield targets non-obvious, adversarial web threats that rely on UI manipulation and subtle script-based behaviors rather than explicit exploits. The system produces a deterministic, explainable security score with categorized findings and visual DOM annotations.
 
-Why this matters
-Web threats aren’t only overt malware. Many harmful experiences hide in deceptive UI/UX or subtle script-based manipulations. WebShield helps users and developers understand and visualize these issues with an easy-to-interpret score and annotations.
+🚨 Why WebShield?
 
-Key Features
+Modern web threats increasingly hide behind interface design, not malware.
 
-Real-time scanning of loaded web content
+Misleading links, false affordances, invisible overlays, and deceptive interaction flows can manipulate users while remaining invisible to conventional security tools. WebShield fills this gap by translating low-level code patterns into human-interpretable security risks.
 
-Rule-based vulnerability detection
+✨ Features
 
-Scoring based on severity (high/medium/low)
+Real-time static analysis of HTML, CSS, JavaScript, and DOM structures
 
-Visual highlighting of suspicious elements
+Heuristic and rule-based detection of deceptive UX and malicious patterns
 
-Explainable feedback for users
+Severity-weighted security scoring
 
-Built With
-Python · FastAPI · Chrome extension · JavaScript · HTML & CSS
+Cross-layer correlation between markup, stylesheets, and scripts
 
-## WATCH THIS ##
+Visual highlighting of suspicious DOM elements
 
+Explainable vulnerability reporting for users and developers
+
+🧮 Security Scoring Model
+
+Each scan begins with a base score of 100.
+
+Severity	Penalty
+High	−10
+Medium	−5
+Low	−2
+
+Example Finding
+
+Issue: Anchor tag with empty href and no interaction handler
+
+Category: UI Deception
+
+Severity: Low
+
+Impact: −2 points
+
+These patterns are frequently used to mislead users through false affordances or interaction traps.
+
+🧠 Architecture Overview
+
+WebShield follows a layered, decoupled architecture designed for real-time analysis without blocking the browser UI.
+
+Chrome Extension (Frontend)
+extension/
+├── popup.html        # User interface
+├── popup.js          # Result rendering & scoring visualization
+├── content.js        # DOM inspection & element highlighting
+
+
+Captures live page metadata and DOM structures
+
+Sends asynchronous scan requests to the backend API
+
+Applies visual annotations to flagged elements
+
+FastAPI Backend
+backend/
+├── scan_api.py       # API orchestration layer
+├── parser_utils.py   # Metadata extraction (HTML, CSS, JS)
+├── html_scanner.py   # HTML pattern analysis
+├── css_scanner.py    # CSS pattern analysis
+├── js_scanner.py     # JavaScript pattern analysis
+├── issue_dict.py     # Issue aggregation & scoring logic
+
+
+Fetches and normalizes raw web content
+
+Downloads and analyzes external CSS resources
+
+Executes modular scanners operating on raw source strings
+
+Aggregates findings into a unified issue schema
+
+🧮 Aggregation & Scoring Pipeline
+
+Initialize score at 100
+
+Execute modular scanners on raw metadata
+
+Normalize findings into a consistent issue format
+
+Apply severity-weighted deductions
+
+Return explainable results as structured JSON
+
+Scoring logic is deterministic and fully traceable.
+
+🎯 Use Cases
+
+Dark pattern and deceptive UX detection
+
+Web security auditing and research
+
+Ethical UI validation for developers
+
+Security education and visualization
+
+🛠️ Built With
+
+Python
+
+FastAPI
+
+JavaScript
+
+Chrome Extensions API
+
+HTML & CSS
+
+🚀 Roadmap
+
+ML-based anomaly detection for unseen UX patterns
+
+LLM-powered explainability layer using Gemini API
+
+Adaptive scoring based on behavioral context
+
+Expanded rule set for emerging deceptive design patterns
+
+🎥 Demo
+
+▶️ Watch the demo:
 https://youtu.be/4--ddW2lfLc
 
-## WATCH THIS ##
+If you want next steps, I can:
 
-<img width="360" height="510" alt="image" src="https://github.com/user-attachments/assets/3fcb0a0d-18a4-43bd-a499-08726dbfef4c" />
+Add architecture diagrams
 
-<img width="379" height="604" alt="image" src="https://github.com/user-attachments/assets/c2e484a7-f682-47ff-a23a-4b3bc246dfde" />
+Write contribution guidelines
 
-## Key Features:
+Add a threat model section
 
-- Real-time HTML, CSS, JS, DOM scanning
-- Rule-based vulnerability detection
-- Low, Medium, High weighted scoring
-- Issue categorization (User explainability)
-- ## User-friendly UI
+Make this pass a security hiring manager skim test in 30 seconds
 
-## Security Scoring Logic
-WebShield starts each scan with a base score of **100**.
-
-| Severity | Penalty |
-|--------|---------|
-| High   | −10     |
-| Medium | −5      |
-| Low    | −2      |
-
-## Example:
-**Issue:** Link with empty href and no interaction handler  
-**Category:** UI Deception  
-**Severity:** Low  
-**Impact:** −2 points  
-
-These patterns can mislead users and are often used in deceptive interfaces.
-
-
-## Architecture
-
-### Layered Architecture
-
-
-## extension/popup.html` and `extension/popup.js` 
-- Handles user interaction and displays scan results, managing button clicks 
-
-## extension/popup.js and extension/content.js
-- Sends scan request to API
-- content.js applies the recognized malicious content and applies highlighting logic
-
-## scan_api.py
-- FastAPI server
-- Fetches and scans content returning into JSON response
-
-## parser_utils.py
-- Fetches all metadata from the website (HTML, CSS, JS)
-- Downloads external CSS
-- returns raw metadata content to be parsed and analyzed
-
-## backend/html_scanner.py backend/js_scanner.py backend/css_scanner.py
-- Analyzes all three parts of metadata
-- Each scanner operates on raw strings and returns issue dictionaries
-- uses issue_dict for analyzing
-
-## backend/issue_dict.py
-
-- aggregates all issues into a consistently formatted list
-- pushed into scoring layer
-
-## backend/issue_dict.py::compute_score()
-- Weighted point deduction from 100 based off of severity
-- Iterates through issue_dict
-
-## extension/popup.js
-- takes backend information and formats it into a readable and explainable scoring UI for the user
-
-## Use Cases
-- UX deception detection
-- Security tooling research
-
-## Future implementation:
-- ML for anomoly detection
-- Gemini API for better explainability and user knowledge
+Just tell me 😄
