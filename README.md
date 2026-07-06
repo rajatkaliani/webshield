@@ -130,16 +130,3 @@ LLM-powered explainability layer using Gemini API
 Adaptive scoring based on behavioral context
 
 Expanded rule set for emerging deceptive design patterns
-
-
-If you want next steps, I can:
-
-Add architecture diagrams
-
-Write contribution guidelines
-
-Add a threat model section
-
-Make this pass a security hiring manager skim test in 30 seconds
-
-Just tell me 😄
